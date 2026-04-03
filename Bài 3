@@ -1,0 +1,112 @@
+#ifndef SOPHUC_H
+#define SOPHUC_H
+
+class SoPhuc {
+private:
+    double iThuc; // Phần thực
+    double iAo;   // Phần ảo
+
+public:
+    // Constructor
+    SoPhuc(double thuc = 0.0, double ao = 0.0);
+
+    // Phương thức nhập
+    void Nhap();
+
+    // Phương thức xuất
+    void Xuat() const;
+
+    // Các phép toán số học
+    SoPhuc Tong(SoPhuc sp) const;
+    SoPhuc Hieu(SoPhuc sp) const;
+    SoPhuc Tich(SoPhuc sp) const;
+    SoPhuc Thuong(SoPhuc sp) const;
+};
+
+#endif
+#include "SoPhuc.h"
+#include <iostream>
+#include <cmath> // For std::abs and std::sqrt
+
+// Constructor
+SoPhuc::SoPhuc(double thuc, double ao) : iThuc(thuc), iAo(ao) {}
+
+// Phương thức nhập
+void SoPhuc::Nhap() {
+    std::cout << "Nhap phan thuc: ";
+    std::cin >> iThuc;
+    std::cout << "Nhap phan ao: ";
+    std::cin >> iAo;
+}
+
+// Phương thức xuất
+void SoPhuc::Xuat() const {
+    if (iAo == 0) {
+        std::cout << iThuc << std::endl;
+    } else if (iThuc == 0) {
+        std::cout << iAo << "i" << std::endl;
+    } else if (iAo > 0) {
+        std::cout << iThuc << " + " << iAo << "i" << std::endl;
+    } else {
+        std::cout << iThuc << " - " << std::abs(iAo) << "i" << std::endl;
+    }
+}
+
+// Các phép toán số học
+SoPhuc SoPhuc::Tong(SoPhuc sp) const {
+    return SoPhuc(iThuc + sp.iThuc, iAo + sp.iAo);
+}
+
+SoPhuc SoPhuc::Hieu(SoPhuc sp) const {
+    return SoPhuc(iThuc - sp.iThuc, iAo - sp.iAo);
+}
+
+SoPhuc SoPhuc::Tich(SoPhuc sp) const {
+    double realPart = iThuc * sp.iThuc - iAo * sp.iAo;
+    double imagPart = iThuc * sp.iAo + iAo * sp.iThuc;
+    return SoPhuc(realPart, imagPart);
+}
+
+SoPhuc SoPhuc::Thuong(SoPhuc sp) const {
+    double denominator = sp.iThuc * sp.iThuc + sp.iAo * sp.iAo;
+    if (denominator == 0) {
+        std::cout << "Loi: Chia cho so phuc 0." << std::endl;
+        return SoPhuc(0, 0); // Trả về số phức 0 + 0i khi có lỗi
+    }
+    double realPart = (iThuc * sp.iThuc + iAo * sp.iAo) / denominator;
+    double imagPart = (iAo * sp.iThuc - iThuc * sp.iAo) / denominator;
+    return SoPhuc(realPart, imagPart);
+}
+
+// Hàm main để kiểm thử
+int main() {
+    SoPhuc sp1, sp2;
+    std::cout << "\n--- Nhap So Phuc 1 ---\n";
+    sp1.Nhap();
+    std::cout << "So phuc 1: ";
+    sp1.Xuat();
+
+    std::cout << "\n--- Nhap So Phuc 2 ---\n";
+    sp2.Nhap();
+    std::cout << "So phuc 2: ";
+    sp2.Xuat();
+
+    std::cout << "\n--- Kiem Thu Cac Phep Toan ---\n";
+    SoPhuc spTong = sp1.Tong(sp2);
+    std::cout << "Tong: ";
+    spTong.Xuat();
+
+    SoPhuc spHieu = sp1.Hieu(sp2);
+    std::cout << "Hieu: ";
+    spHieu.Xuat();
+
+    SoPhuc spTich = sp1.Tich(sp2);
+    std::cout << "Tich: ";
+    spTich.Xuat();
+
+    SoPhuc spThuong = sp1.Thuong(sp2);
+    std::cout << "Thuong: ";
+    spThuong.Xuat();
+
+    return 0;
+}
