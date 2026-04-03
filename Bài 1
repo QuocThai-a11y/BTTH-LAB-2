@@ -1,0 +1,107 @@
+#ifndef NGAYTHANGNAM_H
+#define NGAYTHANGNAM_H
+
+class NgayThangNam {
+private:
+    int iNgay;
+    int iThang;
+    int iNam;
+
+    // Helper methods
+    bool NamNhuan(int y) const;
+    int NgayvaThang(int m, int y) const;
+    bool KiemtraNgay() const;
+    bool KiemtraThang() const;
+    bool KiemtraNam() const;
+
+public:
+    // Constructor
+    NgayThangNam(int ngay = 1, int thang = 1, int nam = 2000);
+
+    // Public methods
+    void Nhap();
+    void Xuat() const;
+    void NgayThangNamTiepTheo();
+};
+
+#endif
+#include "NgayThangNam.h"
+#include <iostream>
+
+// Helper methods
+bool NgayThangNam::NamNhuan(int y) const {
+    return (y % 400 == 0 || (y % 4 == 0 && y % 100 != 0));
+}
+
+int NgayThangNam::NgayvaThang(int m, int y) const {
+    switch (m) {
+        case 4: case 6: case 9: case 11:
+            return 30;
+        case 2:
+            return NamNhuan(y) ? 29 : 28;
+        default: return 31;
+    }
+}
+bool NgayThangNam::KiemtraNgay() const {
+if (iNgay < 1 || iNgay > NgayvaThang(iThang, iNam)) return false;
+return true;
+}
+bool NgayThangNam::KiemtraNam() const {
+    if( iNam < 0) return false ;
+    return true;
+}
+bool NgayThangNam::KiemtraThang() const {
+    if (|| iThang > 12 || iThang < 1) return false;
+    return true;
+}
+
+// Constructor
+NgayThangNam::NgayThangNam(int ngay, int thang, int nam) : iNgay(ngay), iThang(thang), iNam(nam) {}
+
+
+void NgayThangNam::Nhap() {
+    std::cout << "Nhap ngay thang nam (vi du: 31 12 2023): ";
+    std::cin >> iNgay >> iThang >> iNam;
+    while (!KiemtraNgay()) {
+        std::cout << "Ngay khong hop le. Vui long nhap lai: ";
+        std::cin >> iNgay >> iThang >> iNam;
+    }
+     while (!KiemtraThang()) {
+        std::cout << "Thang khong hop le. Vui long nhap lai: ";
+        std::cin >> iNgay >> iThang >> iNam;
+    }
+     while (!KiemtraNam()) {
+        std::cout << "Nam khong hop le. Vui long nhap lai: ";
+        std::cin >> iNgay >> iThang >> iNam;
+    }
+}
+
+void NgayThangNam::Xuat() const {
+    std::cout << iNgay << "/" << iThang << "/" << iNam << std::endl;
+}
+
+void NgayThangNam::NgayThangNamTiepTheo() {
+    if (iNgay < NgayvaThang(iThang, iNam)) {
+        iNgay++;
+    } else {
+        iNgay = 1;
+        if (iThang < 12) {
+            iThang++;
+        } else {
+            iThang = 1;
+            iNam++;
+        }
+    }
+}
+
+int main() {
+    NgayThangNam myDate;
+    myDate.Nhap();
+    std::cout << "Ngay ban dau: ";
+    myDate.Xuat();
+    myDate.NgayThangNamTiepTheo();
+    std::cout << "Ngay ke tiep la: ";
+    myDate.Xuat();
+
+    return 0;
+}
