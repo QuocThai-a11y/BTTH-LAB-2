@@ -1,0 +1,194 @@
+#ifndef PHANSO_H
+#define PHANSO_H
+
+class PhanSo {
+private:
+    int iTu;
+    int iMau;
+
+    // Phương thức hỗ trợ tìm ước chung lớn nhất
+    int UCLN(int a, int b) const;
+
+public:
+    // Constructor
+    PhanSo(int tu = 0, int mau = 1);
+
+    // Phương thức nhập
+    void Nhap();
+
+    // Phương thức xuất
+    void Xuat() const;
+
+    // Phương thức rút gọn
+    void RutGon();
+
+    // Các phép toán số học
+    PhanSo Tong(PhanSo ps) const;
+    PhanSo Hieu(PhanSo ps) const;
+    PhanSo Tich(PhanSo ps) const;
+    PhanSo Thuong(PhanSo ps) const;
+
+    // Phương thức so sánh
+    int SoSanh(PhanSo ps) const; // 1: >, 0: =, -1: <
+};
+
+#endif
+#include "PhanSo.h"
+#include <iostream>
+#include <numeric> // For std::gcd in C++17, but we'll implement our own UCLN for compatibility
+
+// Phương thức hỗ trợ tìm ước chung lớn nhất (Euclidean algorithm)
+int PhanSo::UCLN(int a, int b) const {
+    a = std::abs(a); // Đảm bảo số dương
+    b = std::abs(b); // Đảm bảo số dương
+    while (b != 0) {
+        int temp = b;
+        b = a % b;
+        a = temp;
+    }
+    return a;
+}
+
+// Constructor
+PhanSo::PhanSo(int tu, int mau) {
+    iTu = tu;
+    if (mau == 0) {
+        std::cout << "Loi: Mau so khong the bang 0. Dat mau so mac dinh la 1." << std::endl;
+        iMau = 1;
+    } else {
+        iMau = mau;
+    }
+    RutGon(); // Rút gọn ngay khi khởi tạo
+}
+
+// Phương thức nhập
+void PhanSo::Nhap() {
+    std::cout << "Nhap tu so: ";
+    std::cin >> iTu;
+    do {
+        std::cout << "Nhap mau so (khac 0): ";
+        std::cin >> iMau;
+        if (iMau == 0) {
+            std::cout << "Mau so khong the bang 0. Vui long nhap lai." << std::endl;
+        }
+    } while (iMau == 0);
+    RutGon(); // Rút gọn sau khi nhập
+}
+
+// Phương thức xuất
+void PhanSo::Xuat() const {
+    if (iMau == 1) {
+        std::cout << iTu << std::endl;
+    } else {
+        std::cout << iTu << "/" << iMau << std::endl;
+    }
+}
+
+// Phương thức rút gọn
+void PhanSo::RutGon() {
+    if (iTu == 0) {
+        iMau = 1; // Phân số 0/x luôn là 0/1
+        return;
+    }
+    int uoc = UCLN(iTu, iMau);
+    iTu /= uoc;
+    iMau /= uoc;
+
+    // Đảm bảo mẫu số luôn dương
+    if (iMau < 0) {
+        iTu = -iTu;
+        iMau = -iMau;
+    }
+}
+
+// Các phép toán số học
+PhanSo PhanSo::Tong(PhanSo ps) const {
+    PhanSo ketQua;
+    ketQua.iTu = iTu * ps.iMau + ps.iTu * iMau;
+    ketQua.iMau = iMau * ps.iMau;
+    ketQua.RutGon();
+    return ketQua;
+}
+
+PhanSo PhanSo::Hieu(PhanSo ps) const {
+    PhanSo ketQua;
+    ketQua.iTu = iTu * ps.iMau - ps.iTu * iMau;
+    ketQua.iMau = iMau * ps.iMau;
+    ketQua.RutGon();
+    return ketQua;
+}
+
+PhanSo PhanSo::Tich(PhanSo ps) const {
+    PhanSo ketQua;
+    ketQua.iTu = iTu * ps.iTu;
+    ketQua.iMau = iMau * ps.iMau;
+    ketQua.RutGon();
+    return ketQua;
+}
+
+PhanSo PhanSo::Thuong(PhanSo ps) const {
+    PhanSo ketQua;
+    if (ps.iTu == 0) {
+        std::cout << "Loi: Khong the chia cho 0." << std::endl;
+        // Trả về phân số 0/1 hoặc ném ngoại lệ tùy theo yêu cầu
+        return PhanSo(0, 1);
+    }
+    ketQua.iTu = iTu * ps.iMau;
+    ketQua.iMau = iMau * ps.iTu;
+    ketQua.RutGon();
+    return ketQua;
+}
+
+// Phương thức so sánh
+int PhanSo::SoSanh(PhanSo ps) const {
+    // Quy đồng mẫu số để so sánh tử số
+    long long tu1 = (long long)iTu * ps.iMau;
+    long long tu2 = (long long)ps.iTu * iMau;
+
+    if (tu1 > tu2) return 1;
+    if (tu1 < tu2) return -1;
+    return 0;
+}
+
+// Hàm main để kiểm thử
+int main() {
+    PhanSo ps1, ps2;
+    std::cout << "\n--- Nhap Phan So 1 ---\n";
+    ps1.Nhap();
+    std::cout << "Phan so 1: ";
+    ps1.Xuat();
+
+    std::cout << "\n--- Nhap Phan So 2 ---\n";
+    ps2.Nhap();
+    std::cout << "Phan so 2: ";
+    ps2.Xuat();
+
+    std::cout << "\n--- Kiem Thu Cac Phep Toan ---\n";
+    PhanSo psTong = ps1.Tong(ps2);
+    std::cout << "Tong: ";
+    psTong.Xuat();
+
+    PhanSo psHieu = ps1.Hieu(ps2);
+    std::cout << "Hieu: ";
+    psHieu.Xuat();
+
+    PhanSo psTich = ps1.Tich(ps2);
+    std::cout << "Tich: ";
+    psTich.Xuat();
+
+    PhanSo psThuong = ps1.Thuong(ps2);
+    std::cout << "Thuong: ";
+    psThuong.Xuat();
+
+    std::cout << "\n--- Kiem Thu So Sanh ---\n";
+    int ketQuaSoSanh = ps1.SoSanh(ps2);
+    if (ketQuaSoSanh == 1) {
+        std::cout << "Phan so 1 > Phan so 2" << std::endl;
+    } else if (ketQuaSoSanh == 0) {
+        std::cout << "Phan so 1 = Phan so 2" << std::endl;
+    } else {
+        std::cout << "Phan so 1 < Phan so 2" << std::endl;
+    }
+
+    return 0;
+}
