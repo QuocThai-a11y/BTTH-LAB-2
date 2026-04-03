@@ -1,0 +1,107 @@
+#ifndef GIOPHUTGIAY_H
+#define GIOPHUTGIAY_H
+
+class GioPhutGiay {
+private:
+    int iGio;
+    int iPhut;
+    int iGiay;
+
+    // Hàm bổ trợ kiểm tra tính hợp lệ của thời gian
+    bool KiemTraHopLe(int h, int m, int s) const;
+
+public:
+    // Constructor với tham số mặc định
+    GioPhutGiay(int gio = 0, int phut = 0, int giay = 0);
+
+    // Phương thức nhập/xuất
+    void Nhap();
+    void Xuat() const;
+
+    // Phương thức xử lý logic
+    void TinhCongThemMotGiay();
+};
+
+#endif
+#include "GioPhutGiay.h"
+#include <iostream>
+#include <iomanip>
+
+// Constructor
+GioPhutGiay::GioPhutGiay(int gio, int phut, int giay) {
+    if (KiemTraHopLe(gio, phut, giay)) {
+        iGio = gio;
+        iPhut = phut;
+        iGiay = giay;
+    } else {
+        iGio = iPhut = iGiay = 0;
+    }
+}
+
+// Kiểm tra tính hợp lệ
+bool GioPhutGiay::KiemTraHopLe(int h, int m, int s) const {
+    return (h >= 0 && h < 24 && m >= 0 && m < 60 && s >= 0 && s < 60);
+}
+
+// Phương thức nhập
+void GioPhutGiay::Nhap() {
+    int h, m, s;
+    do {
+        std::cout << "Nhap gio (0-23): "; std::cin >> h;
+        std::cout << "Nhap phut (0-59): "; std::cin >> m;
+        std::cout << "Nhap giay (0-59): "; std::cin >> s;
+        if (!KiemTraHopLe(h, m, s)) {
+            std::cout << "Thoi gian khong hop le! Vui long nhap lai.\n";
+        }
+    } while (!KiemTraHopLe(h, m, s));
+    
+    iGio = h; iPhut = m; iGiay = s;
+}
+
+// Phương thức xuất
+void GioPhutGiay::Xuat() const {
+    std::cout << std::setfill('0') << std::setw(2) << iGio << ":"
+              << std::setfill('0') << std::setw(2) << iPhut << ":"
+              << std::setfill('0') << std::setw(2) << iGiay << std::endl;
+}
+
+// Tính cộng thêm 1 giây
+void GioPhutGiay::TinhCongThemMotGiay() {
+    iGiay++;
+    if (iGiay >= 60) {
+        iGiay = 0;
+        iPhut++;
+        if (iPhut >= 60) {
+            iPhut = 0;
+            iGio++;
+            if (iGio >= 24) {
+                iGio = 0;
+            }
+        }
+    }
+}
+
+// Hàm main để kiểm thử
+int main() {
+    GioPhutGiay tg;
+
+    std::cout << "--- Nhap Thoi Gian ---" << std::endl;
+    tg.Nhap();
+
+    std::cout << "Thoi gian hien tai: ";
+    tg.Xuat();
+
+    tg.TinhCongThemMotGiay();
+    std::cout << "Thoi gian sau khi cong 1 giay: ";
+    tg.Xuat();
+
+    // Kiểm thử trường hợp biên
+    std::cout << "\n--- Kiem thu truong hop 23:59:59 ---" << std::endl;
+    GioPhutGiay tgBien(23, 59, 59);
+    tgBien.Xuat();
+    tgBien.TinhCongThemMotGiay();
+    std::cout << "Ket qua: ";
+    tgBien.Xuat();
+
+    return 0;
+}
